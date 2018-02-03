@@ -106,10 +106,16 @@ public class aliyunossModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void uploadObjectAsync(String bucketName, String sourceFile, String ossFile, String updateDate, final Promise promise) {
 // 构造上传请求
+        if (sourceFile != null) {
+            sourceFile = sourceFile.replace("file://", "");
+        }
         PutObjectRequest put = new PutObjectRequest(bucketName, ossFile, sourceFile);
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setHeader("Date",updateDate);
-        put.setMetadata(metadata);
+        metadata.setContentType("application/octet-stream");
+        if(updateDate!=null) {
+            metadata.setHeader("Date",updateDate);
+        }
 
         // 异步上传时可以设置进度回调
         put.setProgressCallback(new OSSProgressCallback<PutObjectRequest>() {
